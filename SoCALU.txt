@@ -1,0 +1,451 @@
+--------------Reg_core code---------------------
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all;
+
+-----------ADDED LIBRARIES-------------------
+use IEEE.NUMERIC_STD.ALL; --from example file
+----------------------------------------------
+.
+.
+.
+------- My defined signals-------------------------------------
+	signal R0, R1, R2, R3, R4, R5, R6, R7, a, b       : std_logic_vector(31 downto 0); -- Registers and input values
+--------------------------------------------------------------------
+.
+.
+.
+    -- Add user logic here
+    process( S_AXI_ACLK ) is
+    begin
+        IF(rising_edge (S_AXI_ACLK)) THEN
+            CASE slv_reg2(11 DOWNTO 8) IS --selecting the operation
+ ---------------------LOAD OPERATION---------------------------------
+                WHEN "0000" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --selecting where to load the value to
+                        WHEN "000" => R0 <= slv_reg1;
+                        WHEN "001" => R1 <= slv_reg1;
+                        WHEN "010" => R2 <= slv_reg1;
+                        WHEN "011" => R3 <= slv_reg1;
+                        WHEN "100" => R4 <= slv_reg1;
+                        WHEN "101" => R5 <= slv_reg1;
+                        WHEN "110" => R6 <= slv_reg1;
+                        WHEN "111" => R7 <= slv_reg1;
+                        WHEN OTHERS =>
+                    END CASE;
+                    slv_reg0 <= (others => '0');
+----------------------ADD OPERATION------------------------------------------------
+                WHEN "0001" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+                    
+                    slv_reg0 <= a + b; --add
+---------------------------SUBTRACTION OPERATION----------------------------------------
+                WHEN "0010" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+                
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+                
+                slv_reg0 <= a - b; --subtract
+---------------------------MULTIPLICATION OPERATION-------------------------------------
+                WHEN "0011" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;                
+                slv_reg0 <= std_logic_vector(to_unsigned((to_integer(unsigned(a)) * to_integer(unsigned(b))),32)); --multiply
+
+---------------------------DIVISION OPERATION-------------------------------------------
+                WHEN "0100" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;                
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                END CASE;
+                
+                slv_reg0 <= std_logic_vector(to_unsigned(to_integer(unsigned(a)) / to_integer(unsigned(b)),32)); --divide
+---------------------------LESS-THAN OPERATION------------------------------------------
+                WHEN "0101" =>
+                   CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;             
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+             
+                IF(a < b) THEN --compare a and b
+                    slv_reg0 <= "00000000000000000000000000000001";
+                ELSE
+                    slv_reg0 <= "00000000000000000000000000000000";
+                END IF;
+---------------------------GREATER-THAN OPERATION---------------------------------------
+                WHEN "0110" =>
+                   CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;          
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+          
+                IF(a > b) THEN --compare a and b
+                    slv_reg0 <= "00000000000000000000000000000001";
+                ELSE
+                    slv_reg0 <= "00000000000000000000000000000000";
+                END IF;
+---------------------------EQUAL-TO OPERATION-------------------------------------------
+                WHEN "0111" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;          
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+          
+                IF(a = b) THEN --compare a and b
+                    slv_reg0 <= "00000000000000000000000000000001";
+                ELSE
+                    slv_reg0 <= "00000000000000000000000000000000";
+                END IF;
+---------------------------AND OPERATION------------------------------------------------
+                WHEN "1000" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;            
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+            
+                slv_reg0 <= a AND b; -- AND a and b
+---------------------------OR OPERATION-------------------------------------------------
+                WHEN "1001" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;        
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+        
+                slv_reg0 <= a OR b; -- OR a and b
+---------------------------SHIFT-LEFT OPERATION-----------------------------------------
+                WHEN "1010" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;        
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+        
+                slv_reg0 <= std_logic_vector(shift_left(unsigned(a), to_integer(unsigned(b)))); -- shift left
+---------------------------SHIFT-RIGHT OPERATION-----------------------------------------
+                WHEN "1011" =>
+                    CASE slv_reg2(6 DOWNTO 4) IS --assigning operand 1 to register
+                        WHEN "000" => a <= R0;
+                        WHEN "001" => a <= R1;
+                        WHEN "010" => a <= R2;
+                        WHEN "011" => a <= R3;
+                        WHEN "100" => a <= R4;
+                        WHEN "101" => a <= R5;
+                        WHEN "110" => a <= R6;
+                        WHEN "111" => a <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+    
+                    CASE slv_reg2(2 DOWNTO 0) IS --assigning operand 2 to register
+                        WHEN "000" => b <= R0;
+                        WHEN "001" => b <= R1;
+                        WHEN "010" => b <= R2;
+                        WHEN "011" => b <= R3;
+                        WHEN "100" => b <= R4;
+                        WHEN "101" => b <= R5;
+                        WHEN "110" => b <= R6;
+                        WHEN "111" => b <= R7;
+                        WHEN OTHERS =>
+                    END CASE;
+    
+                slv_reg0 <= std_logic_vector(shift_right(unsigned(a), to_integer(unsigned(b)))); -- shift right
+--------------------------------------------------------------------------------------------------
+            WHEN OTHERS =>
+                --Here so there are no errors
+            END CASE;
+       END IF;
+    end process;
+    -- User logic ends
+
+
+
+
+--------------------C CODE--------------------------
+#include <stdio.h>
+#include "platform.h"
+#include "xparameters.h"
+
+
+unsigned int i, j;
+char c;
+
+unsigned int *Reg_0 = (unsigned int *) (XPAR_REG_CORE_0_S00_AXI_BASEADDR + 0);  //slv_reg0
+unsigned int *Reg_1 = (unsigned int *) (XPAR_REG_CORE_0_S00_AXI_BASEADDR + 4);  //slv_reg1
+unsigned int *Reg_2 = (unsigned int *) (XPAR_REG_CORE_0_S00_AXI_BASEADDR + 8);  //slv_reg2
+unsigned int *Reg_3 = (unsigned int *) (XPAR_REG_CORE_0_S00_AXI_BASEADDR + 12); //slv_reg3
+
+int main()
+{
+    init_platform();
+
+    print("Start Program\n\r");
+    c = getc(stdin); // wait for input to proceed
+
+/////////////////LOADING VALUES/////////////////////////////
+    *Reg_2 = 0x00000000; //load into R0
+    *Reg_1 = 0x00000001; //the value 1
+
+    *Reg_2 = 0x00000010; //load into R1
+    *Reg_1 = 0x00000002; //the value 2
+
+    *Reg_2 = 0x00000020; //load into R2
+    *Reg_1 = 0x00000003; //the value 3
+
+    *Reg_2 = 0x00000030; //load into R3
+    *Reg_1 = 0x00000004; //the value 4
+
+    *Reg_2 = 0x00000040; //load into R4
+    *Reg_1 = 0x00000005; //the value 5
+
+    *Reg_2 = 0x00000050; //load into R5
+    *Reg_1 = 0x00000006; //the value 6
+
+    *Reg_2 = 0x00000060; //load into R6
+    *Reg_1 = 0x00000007; //the value 7
+
+    *Reg_2 = 0x00000070; //load into R7
+    *Reg_1 = 0x00000008; //the value 8
+
+/////////////////////ADDING/////////////////////////////
+    *Reg_2 = 0x00000114; //add R1 and R4 (2 + 5)
+    printf("OPERATION: 2 + 5\n"); //operation
+    printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+/////////////////////SUBTRACTING/////////////////////////////
+    *Reg_2 = 0x00000272; //subtract R7 and R2 (7 - 3)
+    printf("OPERATION: 7 - 3\n"); //operation
+    printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+//////////////////////MULTIPLYING////////////////////////////
+    *Reg_2 = 0x00000312; //multiply R1 and R2 (2 * 3)
+    printf("OPERATION: 2 * 3\n"); //operation
+    printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+//////////////////////DIVIDING////////////////////////////
+    *Reg_2 = 0x00000450; //divide R5 and R0 (6/1)
+    printf("OPERATION: 6 / 1\n"); //operation
+    printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+//////////////////////LESS THAN////////////////////////////
+    *Reg_2 = 0x00000563; //compare R6 and R3 (7 < 4)
+    printf("OPERATION: 7 < 4\n"); //operation
+    printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+//////////////////////GREATER THAN////////////////////////////
+    *Reg_2 = 0x00000675; //compare R7 and R5 (8 > 6)
+    printf("OPERATION: 8 > 6\n"); //operation
+    printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+//////////////////////EQUAL TO////////////////////////////
+     *Reg_2 = 0x00000733; //add R3 and R3 (4 = 4)
+     printf("OPERATION: 4 = 4\n"); //operation
+     printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+
+//////////////////////AND////////////////////////////
+      *Reg_2 = 0x00000812; //AND R1 and R2 (2 AND 3)
+      printf("OPERATION: 2 AND 3\n"); //operation
+      printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+//////////////////////OR////////////////////////////
+      *Reg_2 = 0x00000923; //OR R2 and R3 (3 OR 4)
+      printf("OPERATION: 3 OR 4\n"); //operation
+      printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+//////////////////////SHIFT LEFT////////////////////////////
+      *Reg_2 = 0x00000A11; //Shift left R1 by R1
+      printf("OPERATION: Shift 2 Left by 2\n"); //operation
+      printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+//////////////////////SHIFT RIGHT////////////////////////////
+      *Reg_2 = 0x00000B70; //shift right R7 by R0
+      printf("OPERATION: Shift 8 Right by 1"); //operation
+      printf("RESULT: %d\n\n", *Reg_0); //result from slv_reg0
+
+    return 0;
+}
